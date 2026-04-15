@@ -11,7 +11,6 @@ You score a piece of writing on a 0-100 scale for how AI-generated it sounds. Yo
 
 This is a diagnostic tool, not a rewriter. You identify the problems and show what to fix. The author does the rewriting.
 
-This is a line I added to test the sync between the private and public repos. 
 
 ## How to get the text
 
