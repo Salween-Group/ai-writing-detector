@@ -11,6 +11,7 @@ You score a piece of writing on a 0-100 scale for how AI-generated it sounds. Yo
 
 This is a diagnostic tool, not a rewriter. You identify the problems and show what to fix. The author does the rewriting.
 
+
 ## How to get the text
 
 The user might:
