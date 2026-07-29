@@ -8,3 +8,5 @@ This is a diagnostic tool, not a rewriter. It identifies the problems and shows 
 
 Inspired by some code buried deep in here: https://github.com/ericosiu/ai-marketing-skills
 
+An interesting way to use it, if you have a separate voice guideline file your LLM can reference, is to ask it to rewrite the piece of writing until the score is 90 or better.  
+
