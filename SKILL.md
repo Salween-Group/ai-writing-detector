@@ -1,13 +1,15 @@
 ---
 name: ai-writing-detector
-description: "Score any piece of writing on a 0-100 scale for how AI-generated it sounds (0 = obviously AI, 100 = indistinguishable from human). Auto-detects content type (blog post, LinkedIn post, email, Slack message) and applies channel-specific AI pattern detection on top of 40+ universal patterns and a banned vocabulary list. Use this skill whenever the user asks for an AI test, AI writing test, AI voice score, humanizer score, humanizer check, AI detection score, AI writing score, writing authenticity check, 'does this sound like AI', 'how human does this sound', 'check for AI patterns', 'score this draft', 'run the humanizer', 'AI detector', or any request to evaluate whether text reads as machine-generated versus human-written. Also trigger when the user pastes text and asks 'is this AI?', 'would this pass AI detection?', or 'how robotic does this sound?'. Do NOT use for rewriting or humanizing text — this skill only scores and diagnoses."
+description: "Score any piece of writing on a 0-100 scale for how AI-generated it sounds (0 = obviously AI, 100 = indistinguishable from human). Auto-detects content type (blog post, LinkedIn post, email, Slack message) and applies channel-specific AI pattern detection on top of 45+ universal patterns and a banned vocabulary list. Use this skill whenever the user asks for an AI test, AI writing test, AI voice score, humanizer score, humanizer check, AI detection score, AI writing score, writing authenticity check, 'does this sound like AI', 'how human does this sound', 'check for AI patterns', 'score this draft', 'run the humanizer', 'AI detector', or any request to evaluate whether text reads as machine-generated versus human-written. Also trigger when the user pastes text and asks 'is this AI?', 'would this pass AI detection?', or 'how robotic does this sound?'. Do NOT use for rewriting or humanizing text — this skill only scores and diagnoses."
 ---
 
 # AI Writing Detector v2
 
+**Version:** 2.1.0
+
 ## What this skill does
 
-You score a piece of writing on a 0-100 scale for how AI-generated it sounds. You auto-detect the content type, run through 40+ AI writing patterns (universal + channel-specific), check an expanded banned vocabulary list, assess originality, and deliver a single score with a detailed diagnostic report.
+You score a piece of writing on a 0-100 scale for how AI-generated it sounds. You auto-detect the content type, run through 45+ AI writing patterns (universal + channel-specific), check an expanded banned vocabulary list, assess originality, and deliver a single score with a detailed diagnostic report.
 
 This is a diagnostic tool, not a rewriter. You identify the problems and show what to fix. The author does the rewriting.
 
@@ -51,15 +53,15 @@ Each category has a maximum total deduction. Once hit, stop counting deductions 
 | Category | What it covers | Max deduction |
 |---|---|---|
 | **Banned vocabulary** | Banned word list | -15 |
-| **Content patterns** | #1-6, #25-34 | -20 |
+| **Content patterns** | #1-6, #25-39 | -25 |
 | **Language & grammar** | #7-12 | -15 |
 | **Style patterns** | #13-18 | -10 |
 | **Communication patterns** | #19-21 | -15 |
 | **Filler & hedging** | #22-24 | -10 |
-| **Channel-specific patterns** | LinkedIn/Email/Slack extras | -5 |
+| **Channel-specific patterns** | LinkedIn/Email/Slack extras | -10 |
 | **Originality** | "Only I could write this" check | -5 |
 
-Worst possible score: **100 - 15 - 20 - 15 - 10 - 15 - 10 - 5 - 5 = 5, floored to 0**. In practice, text that saturates every cap lands around 5. Text with problems in two or three categories but clean elsewhere lands in the 40-70 diagnostic sweet spot. Text with problems in two or three categories lands in the 40-70 diagnostic sweet spot.
+Worst possible score: **100 - 15 - 25 - 15 - 10 - 15 - 10 - 10 - 5 = -5, floored to 0**. In practice, text that saturates every cap lands at 0. Text with problems in two or three categories but clean elsewhere lands in the 40-70 diagnostic sweet spot.
 
 ### Severity override
 
@@ -72,6 +74,17 @@ When raw deductions (before caps) exceed **150 points**, the text is so saturate
 - **30-49**: Heavy AI patterns. Major rewrite.
 - **0-29**: Reads like raw ChatGPT output. Full rewrite.
 
+### What not to flag (false-positive guards)
+
+Genuinely human writing has quirks that superficially resemble AI patterns. Deducting for them punishes exactly the writing this skill exists to protect, and it matters most at the 70-100 end of the scale where copy gets cleared for publication. Before deducting, check these guards:
+
+- **Real uncertainty is not hedging.** "I think", "maybe", "honestly", or "I'm not sure this holds" carrying genuine doubt, self-awareness, or spoken rhythm is human. Pattern #23 targets *stacked* hedges on a single claim ("could potentially possibly"), not a writer committing to uncertainty once.
+- **One fragment or parenthetical is voice, not a violation.** Patterns #28, #30, and #31 require repetition or performance — a lone aside, a single fragment with a clear job, or one change of pace in an otherwise varied piece deducts nothing.
+- **Characteristic phrases get one free pass.** A filler phrase (#22) or often-empty adverb that recurs as part of a recognizable spoken voice — and whose sentence still earns its place — is not the same as boilerplate delaying the point. Flag the second and third occurrence, not the first.
+- **Edge stays.** Strong opinions, blunt language, humor, profanity, and honest admissions are evidence of a human, not problems. Never count them toward any deduction.
+
+When a guard applies, you can still mention the instance in the report as a note ("kept — reads as voice"), but deduct nothing.
+
 ---
 
 ## Step 1: Banned vocabulary scan
@@ -79,7 +92,7 @@ When raw deductions (before caps) exceed **150 points**, the text is so saturate
 Each occurrence costs **-5 points** (subject to the -15 category cap).
 
 **The banned list:**
-delve, tapestry, landscape (abstract use), leverage, multifaceted, nuanced, pivotal, realm, robust, seamless, testament, transformative, underscore (as verb), utilize, whilst, keen, embark, comprehensive, intricate, commendable, meticulous, paramount, groundbreaking, innovative, cutting-edge, synergy, holistic, paradigm, ecosystem, Additionally, align with, crucial, enduring, enhance, fostering, garner, highlight (as verb), interplay, intricacies, showcase, vibrant, valuable, profound, renowned, breathtaking, nestled, stunning, foster, cultivate, facilitate, elevate, essentially, certainly, overall (as filler qualifier), absolutely (as affirmation opener), typically, various (as vague pluralizer), superpower, journey (figurative), albeit
+delve, tapestry, landscape (abstract use), leverage, multifaceted, nuanced, pivotal, realm, robust, seamless, testament, transformative, underscore (as verb), utilize, whilst, keen, embark, comprehensive, intricate, commendable, meticulous, paramount, groundbreaking, innovative, cutting-edge, synergy, holistic, paradigm, ecosystem, Additionally, align with, crucial, enduring, enhance, fostering, garner, highlight (as verb), interplay, intricacies, showcase, vibrant, valuable, profound, renowned, breathtaking, nestled, stunning, foster, cultivate, facilitate, elevate, essentially, certainly, overall (as filler qualifier), absolutely (as affirmation opener), typically, various (as vague pluralizer), superpower, journey (figurative), albeit, streamline, empower, beacon, supercharge, harness (figurative), ever-evolving, game changer / game-changing
 
 **Context-sensitive entries:**
 - "Landscape" and "highlight" only count when used figuratively ("the marketing landscape" is banned; "the desert landscape" is fine)
@@ -191,22 +204,22 @@ Using smart quotes instead of straight quotes (minor tell, but detectable).
 ### FILLER AND HEDGING
 
 **22. Filler Phrases** (-5 each)
-"In order to" (just say "To"), "Due to the fact that" (say "Because"), "At this point in time" (say "Now"), "It is important to note that" (just state it), "In today's [noun]" (just start with the point), "When it comes to" (cut it), "At the end of the day" (cut it), "The truth is" (just state the claim).
+"In order to" (just say "To"), "Due to the fact that" (say "Because"), "At this point in time" (say "Now"), "It is important to note that" (just state it), "In today's [noun]" (just start with the point), "When it comes to" (cut it), "At the end of the day" (cut it), "The truth is" (just state the claim), "It's worth noting" (just note it), "At its core" (cut it), "In the world of" / "In the age of" (start with the point), "The reality is" (just state the claim), "Going forward" (usually cut), "In terms of" (recast the sentence), "With regard to" (say "about"), "Let's dive in" (cut it).
 > Fix direction: Compress or delete.
 
 **23. Excessive Hedging** (-8)
 "Could potentially possibly", "might have some effect", "it could be argued that", "I was wondering if perhaps", "One might argue".
 > Fix direction: Commit to the claim or cut it.
 
-**24. Generic Positive Conclusions** (-10)
-"The future looks bright", "Exciting times lie ahead", "continues their journey toward excellence", "And we're just getting started".
-> Fix direction: End with a specific fact, open question, or concrete next step.
+**24. Generic Positive or Fake-Profound Conclusions** (-10)
+Two flavours of the same disease. The generic-optimism ending: "The future looks bright", "Exciting times lie ahead", "continues their journey toward excellence", "And we're just getting started". And the fake-profound kicker: a closing aphorism, metaphor, or mic-drop line that dresses the point up as wisdom — "The future isn't coming. It's already here." "The best code is the code you never write."
+> Fix direction: End with a specific fact, open question, or concrete next step. Don't rewrite a fake-profound kicker into a better metaphor — delete it and end on the last concrete point.
 
 ---
 
 ## Step 2b: Expanded structural patterns
 
-These additional structural markers apply to all content types. Each costs **-5 points** and counts toward the **content patterns** or **language & grammar** cap (whichever is more relevant to the specific violation).
+These additional structural markers (#25-39) apply to all content types. Each costs **-5 points** and counts toward the **content patterns** or **language & grammar** cap (whichever is more relevant to the specific violation).
 
 **25. Credential Stacking Opener** (-5)
 Opening with 2-3 credential statements before making any point. "As a 15-year veteran of... who has worked with... and spoken at..."
@@ -224,8 +237,8 @@ Rapid-fire sequence of 3+ short statistical fragments at the top. "$2.3B market.
 Ending with a standalone short sentence designed as a mic-drop. "That's the whole game." "Full stop."
 > Fix direction: Fold the thought into the final paragraph or close with a real observation.
 
-**29. Tension-Colon Opener** (-5)
-Opening with a colon-separated tension statement. "The problem with marketing today: nobody reads."
+**29. Dramatic Colon Reveal** (-5)
+A noun phrase, a colon, then a reveal played for drama — as an opener ("The problem with marketing today: nobody reads.") or anywhere in the body ("The best part: it learns." "The detail that makes it work: a separate agent grades it."). Colons are for lists, labels, and quotes, not manufactured suspense.
 > Fix direction: State the observation as a normal sentence.
 
 **30. Fake Candor Parentheticals** (-5)
@@ -233,12 +246,12 @@ Multiple parenthetical asides to simulate conversational tone. One is fine. Thre
 > Fix direction: Remove most parentheticals. Keep one if it genuinely adds an aside.
 
 **31. Standalone Hype Fragment** (-5)
-"This is big." or "Game changer." as its own sentence or paragraph.
+"This is big." "Game changer." "This is huge." "This changes everything." as its own sentence or paragraph.
 > Fix direction: Replace with a specific claim about what changed and for whom.
 
-**32. Self-Posed Question Transition** (-5)
-"Why? Because..." or "How? Simple:" as a transition between paragraphs.
-> Fix direction: Rewrite as a declarative statement.
+**32. Rhetorical Setups and Self-Posed Questions** (-5)
+"Why? Because..." or "How? Simple:" as a transition between paragraphs, plus staged setups anywhere: "What if I told you...", "Think about it:", "Plot twist:", and self-answered question/answer pairs.
+> Fix direction: Rewrite as a declarative statement. Drop the setup and make the point.
 
 **33. Reading Complexity Creep** (-5)
 Clusters of multi-syllable vocabulary and nested dependent clauses that push reading level above 10th grade in conversational content. Three or more 3+ syllable words in one sentence, or sentences with 2+ embedded dependent clauses.
@@ -247,6 +260,26 @@ Clusters of multi-syllable vocabulary and nested dependent clauses that push rea
 **34. Runway Sentences** (-5)
 Vague hype lines before the actual specific detail. "We're thrilled to announce something we've been working on for months:" — just say what it is.
 > Fix direction: Cut the runway, start with the substance.
+
+**35. Faux-Insight Setup** (-5)
+Framing an ordinary claim as hidden knowledge only this writer will share: "What nobody tells you...", "The part everyone misses", "This is the part most people skip", "What most people get wrong". The setup flatters the writer as the lone expert while the claim underneath is usually conventional.
+> Fix direction: Cut the setup and let the claim stand on its own. "The part everyone misses: distribution is the real moat" becomes "Distribution is the moat."
+
+**36. Interpretive Metadiscourse** (-5)
+Lines that step outside the subject to tell the reader what to notice or how much weight to give it: "The key point is", "As you can see", "This distinction matters", "That last part matters more than it sounds", and redundant "In other words" restatements. If the point is clear, the aside is noise; if it isn't, the aside doesn't fix it.
+> Fix direction: Delete the aside. If the point genuinely isn't landing, add the missing fact or example instead of a signpost.
+
+**37. Summary-Recap Ending** (-5)
+A final paragraph that restates what the piece just said, usually flagged by "In conclusion", "Ultimately", "To sum up", or "Overall". The reader was just there.
+> Fix direction: Delete the recap and end on the last concrete point, takeaway, or next action.
+
+**38. Negative Listing** (-5)
+Defining the thing by a stack of what it isn't: "Not a framework. Not a template. A system." Distinct from #9 — this is the multi-sentence denial stack, not the "not only... but" construction.
+> Fix direction: Just say what it is.
+
+**39. Robotic Rhythm** (-5)
+The whole-document tell: repeated sentence shapes, paragraphs built on an identical template, or stacked punchy fragments ("X. And Y. And Z."). Each sentence can pass individually while the uniform cadence gives the machine away. Only flag genuine uniformity across the piece — varied human pacing with the occasional echo is fine.
+> Fix direction: Vary sentence length and paragraph shape. Merge fragments into full sentences where the drama isn't earned.
 
 ---
 
@@ -351,7 +384,17 @@ Deduct the total (max -5) and note what's missing. If the text has genuine speci
 
 ---
 
-## Step 4: Deliver the report
+## Step 4: Self-check before delivering
+
+Verify your own report before returning it. Fix and re-verify anything that fails:
+
+1. **Quotes are real.** Every quoted line in the report appears verbatim in the scored text. No paraphrased "quotes".
+2. **Arithmetic holds.** Raw deductions per category sum correctly, caps are applied per the table, the severity override fires only when raw deductions exceed 150, and the final score equals 100 minus the capped total (floored at 0).
+3. **Verdict matches the band.** The verdict word matches the score range in the rubric.
+4. **Channel patterns match the detection.** No LinkedIn patterns flagged on an email, and so on.
+5. **Guards respected.** Nothing deducted that the false-positive guards protect.
+
+## Step 5: Deliver the report
 
 Structure your output exactly like this:
 
@@ -383,7 +426,7 @@ Suggested fix: [specific rewrite direction for this instance]
 | Category | Raw deductions | Capped deduction |
 |---|---|---|
 | Banned vocabulary | -X | -X |
-| Content patterns (#1-6, #25-34) | -X | -X (CAP REACHED) |
+| Content patterns (#1-6, #25-39) | -X | -X (CAP REACHED) |
 | Language & grammar (#7-12) | -X | -X |
 | Style patterns (#13-18) | -X | -X |
 | Communication patterns (#19-21) | -X | -X |
@@ -399,6 +442,8 @@ Show both columns so the author sees the full severity even when caps apply. If 
 2. [Second most impactful]
 3. [Third most impactful]
 
+*ai-writing-detector v2.1.0 — the score measures AI-pattern density, not proof of authorship.*
+
 ---
 
 ## What good human writing looks like (for calibration)
@@ -413,3 +458,13 @@ When scoring, remember what you're comparing against. Good human writing has:
 - Humor, edge, or personality
 - Concrete examples with names, dates, numbers
 - A point of view only this author could have (earned through experience, not borrowed from conventional wisdom)
+
+---
+
+## Version history
+
+| Version | Date | Changes |
+|---|---|---|
+| 2.1.0 | 2026-09-07 | Added patterns #35-39 (faux-insight setups, interpretive metadiscourse, summary-recap endings, negative listing, robotic rhythm); extended #24, #29, #31, #32; 7 new banned words and 8 new filler phrases; false-positive guards; pre-delivery self-check; content-pattern cap raised to -25; report stamps version + authorship caveat. Several additions informed by Peter Yang's no-ai-slop (MIT). |
+| 2.0.0 | 2026-04-26 | v2 rewrite: channel detection, 40+ patterns, category caps, severity override, originality scoring. |
+| 1.0.0 | 2026-04-10 | Initial 24-pattern detector. |
