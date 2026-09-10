@@ -6,10 +6,6 @@ This skill scores a piece of writing on a 0-100 scale for how AI-generated it so
 
 This is a diagnostic tool, not a rewriter. It identifies the problems and shows what to fix.
 
-## Suggested use
-
-An interesting way to use it, if you have a separate voice guideline file your LLM can reference, is to ask it to rewrite the piece of writing until the score is 90 or better.
-
 ## Credits
 
 - Inspired by some code buried deep in here: https://github.com/ericosiu/ai-marketing-skills
