@@ -5,7 +5,7 @@ description: "Score any piece of writing on a 0-100 scale for how AI-generated i
 
 # AI Writing Detector v2
 
-**Version:** 2.1.0
+**Version:** 2.2.0
 
 ## What this skill does
 
@@ -43,6 +43,34 @@ If ambiguous, default to **blog post** and note it.
 ---
 
 ## Scoring method
+
+**Do the arithmetic with `scripts/score.py`, not in your head.** You decide what is a
+violation — that is judgement, and it stays with you. Tallying stacked occurrences,
+applying eight category caps and firing the severity override is not judgement, and
+doing it by hand gives a different answer on different runs of the same text, which
+is the one thing a scoring tool cannot afford.
+
+```bash
+python scripts/score.py findings.json
+```
+
+`findings.json` is what you detected, nothing more:
+
+```json
+{ "banned_words": 6,
+  "originality": -5,
+  "findings": [ {"id": "1", "occurrences": 2},
+                {"id": "27", "occurrences": 3, "category": "language & grammar"},
+                {"id": "L2", "occurrences": 1} ] }
+```
+
+`category` is needed only for patterns #25–39, where the rule below leaves the bucket
+to judgement. The script reads every penalty and cap **out of this file**, so the two
+can never disagree; it rejects a pattern id that does not exist here rather than
+scoring it silently. `python scripts/score.py --self-test` proves the documented
+worked examples still come out right — run it after changing any penalty or cap.
+
+The rules it implements, for reference:
 
 Start at 100. Deduct points across seven scoring categories. Multiple occurrences of the same pattern stack up to 2x the base penalty (so a -10 pattern found 3+ times caps at -20 total for that pattern).
 
@@ -389,7 +417,7 @@ Deduct the total (max -5) and note what's missing. If the text has genuine speci
 Verify your own report before returning it. Fix and re-verify anything that fails:
 
 1. **Quotes are real.** Every quoted line in the report appears verbatim in the scored text. No paraphrased "quotes".
-2. **Arithmetic holds.** Raw deductions per category sum correctly, caps are applied per the table, the severity override fires only when raw deductions exceed 150, and the final score equals 100 minus the capped total (floored at 0).
+2. **The score came from the script.** `scripts/score.py` produced the number in the report — you did not total it by hand or adjust its output. If the script's score looks wrong, the findings file is wrong: fix what you fed it and run it again.
 3. **Verdict matches the band.** The verdict word matches the score range in the rubric.
 4. **Channel patterns match the detection.** No LinkedIn patterns flagged on an email, and so on.
 5. **Guards respected.** Nothing deducted that the false-positive guards protect.
@@ -465,6 +493,7 @@ When scoring, remember what you're comparing against. Good human writing has:
 
 | Version | Date | Changes |
 |---|---|---|
+| 2.2.0 | 2026-09-20 | Scoring arithmetic moved into `scripts/score.py`. Detection stays with the model; stacking, the eight category caps, the >150 severity override and the floor are now computed, because hand-tallying gave a different answer on different runs of the same text. The script parses penalties and caps **out of SKILL.md** rather than holding a second copy, rejects pattern ids this file does not define, and ships a `--self-test` that also fails if the caps stop summing to the documented -105. Found while building it: a category landing exactly on its cap was not being marked (CAP REACHED) |
 | 2.1.0 | 2026-09-07 | Added patterns #35-39 (faux-insight setups, interpretive metadiscourse, summary-recap endings, negative listing, robotic rhythm); extended #24, #29, #31, #32; 7 new banned words and 8 new filler phrases; false-positive guards; pre-delivery self-check; content-pattern cap raised to -25; report stamps version + authorship caveat. Several additions informed by Peter Yang's no-ai-slop (MIT). |
 | 2.0.0 | 2026-04-26 | v2 rewrite: channel detection, 40+ patterns, category caps, severity override, originality scoring. |
 | 1.0.0 | 2026-04-10 | Initial 24-pattern detector. |
