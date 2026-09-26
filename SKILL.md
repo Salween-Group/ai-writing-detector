@@ -5,7 +5,7 @@ description: "Score any piece of writing on a 0-100 scale for how AI-generated i
 
 # AI Writing Detector v2
 
-**Version:** 2.2.0
+**Version:** 2.2.1
 
 ## What this skill does
 
@@ -254,7 +254,7 @@ Opening with 2-3 credential statements before making any point. "As a 15-year ve
 > Fix direction: Weave credentials into the argument where they earn context, or skip them.
 
 **26. Stat Bomb Opener** (-5)
-Rapid-fire sequence of 3+ short statistical fragments at the top. "$2.3B market. 47% growth. 12M users."
+Rapid-fire sequence of 3+ short statistical fragments at the top. "€2.3B market. 47% growth. 12M users."
 > Fix direction: Weave stats into real sentences with context.
 
 **27. Honesty Disclaimer** (-5)
@@ -493,6 +493,7 @@ When scoring, remember what you're comparing against. Good human writing has:
 
 | Version | Date | Changes |
 |---|---|---|
+| 2.2.1 | 2026-09-26 | The pattern example for a burst of statistical fragments uses "€2.3B" instead of a dollar figure. The skill loader replaces `$` followed by a digit with an invoking argument (seo-audit's cost figure rendered as "USSalween.10" on 26 September 2026), which garbled the example. Scoring unchanged |
 | 2.2.0 | 2026-09-20 | Scoring arithmetic moved into `scripts/score.py`. Detection stays with the model; stacking, the eight category caps, the >150 severity override and the floor are now computed, because hand-tallying gave a different answer on different runs of the same text. The script parses penalties and caps **out of SKILL.md** rather than holding a second copy, rejects pattern ids this file does not define, and ships a `--self-test` that also fails if the caps stop summing to the documented -105. Found while building it: a category landing exactly on its cap was not being marked (CAP REACHED) |
 | 2.1.0 | 2026-09-07 | Added patterns #35-39 (faux-insight setups, interpretive metadiscourse, summary-recap endings, negative listing, robotic rhythm); extended #24, #29, #31, #32; 7 new banned words and 8 new filler phrases; false-positive guards; pre-delivery self-check; content-pattern cap raised to -25; report stamps version + authorship caveat. Several additions informed by Peter Yang's no-ai-slop (MIT). |
 | 2.0.0 | 2026-04-26 | v2 rewrite: channel detection, 40+ patterns, category caps, severity override, originality scoring. |
